@@ -1,0 +1,72 @@
+
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config globals 'globals'
+	option ula_prefix 'fd18:4d8b:6ba3::/48'
+	option packet_steering '2'
+	option steering_flows '256'
+
+config device
+	option name 'br-lan'
+	option type 'bridge'
+	list ports 'bat0'
+	list ports 'bat0.99'
+	list ports 'lan'
+
+config device
+	option name 'lan'
+
+config interface 'LAN'
+	option proto 'dhcp'
+	option device 'br-lan'
+
+config interface 'IOT'
+	option proto 'dhcp'
+	option device 'br-iot'
+	option defaultroute '0'
+
+config interface 'GUEST'
+	option proto 'dhcp'
+	option device 'br-guest'
+
+config device
+	option type 'bridge'
+	option name 'br-guest'
+	list ports 'bat0.4'
+
+config device
+	option type 'bridge'
+	option name 'br-iot'
+	list ports 'bat0.3'
+
+config interface 'bat0'
+	option proto 'batadv'
+	option routing_algo 'BATMAN_IV'
+	option bridge_loop_avoidance '1'
+	option gw_mode 'off'
+	option hop_penalty '30'
+	option aggregated_ogms '1'
+	option orig_interval '10000'
+	option bonding '1'
+
+config interface 'BATMESH'
+	option proto 'batadv_hardif'
+	option master 'bat0'
+	option mtu '1560'
+
+config interface 'BATWIRE'
+	option proto 'batadv_hardif'
+	option device 'br-mesh'
+	option master 'bat0'
+	option mtu '1536'
+
+config device
+	option type 'bridge'
+	option name 'br-mesh'
+	list ports 'bat0'
+	list ports 'wan'
+
